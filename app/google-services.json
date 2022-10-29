@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "667426234930",
+    "project_id": "nmedia-77kmv",
+    "storage_bucket": "nmedia-77kmv.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:667426234930:android:6c857023f53fe31a69922b",
+        "android_client_info": {
+          "package_name": "ru.netology.nmedia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "667426234930-c1ukdtctgb4lif0ob49sndfaokaf6ibn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYJ2ihaDBGYOoz3h2rrC0LTV46KwfQfZo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "667426234930-c1ukdtctgb4lif0ob49sndfaokaf6ibn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
