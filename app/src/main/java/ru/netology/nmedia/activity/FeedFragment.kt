@@ -16,6 +16,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import ru.netology.nmedia.R
+import ru.netology.nmedia.activity.ViewPhotoFragment.Companion.attachmentPhotoUrl
 import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
@@ -71,6 +72,10 @@ class FeedFragment : Fragment() {
                 val shareIntent =
                     Intent.createChooser(intent, getString(R.string.chooser_share_post))
                 startActivity(shareIntent)
+            }
+
+            override fun onPhotoView(photoUrl: String) {
+                findNavController().navigate(R.id.action_feedFragment_to_viewPhotoFragment, Bundle().apply { attachmentPhotoUrl = photoUrl })
             }
         })
         binding.list.adapter = adapter

@@ -7,10 +7,12 @@ import android.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.enumeration.AttachmentType
 import ru.netology.nmedia.view.loadCircleCrop
 
 interface OnInteractionListener {
@@ -18,6 +20,7 @@ interface OnInteractionListener {
     fun onEdit(post: Post) {}
     fun onRemove(post: Post) {}
     fun onShare(post: Post) {}
+    fun onPhotoView(photoUrl: String) {}
 }
 
 class PostsAdapter(
@@ -50,6 +53,24 @@ class PostViewHolder(
             like.text = "${post.likes}"
             like.isEnabled = !post.notSaved
             share.isEnabled = !post.notSaved
+
+            val attachment = post.attachment
+            if (attachment != null && attachment.type == AttachmentType.IMAGE) {
+                attachmentImageView.visibility = View.VISIBLE
+
+                Glide.with(attachmentImageView)
+                    .load("${BuildConfig.BASE_URL}/media/${post.attachment.url}")
+                    .placeholder(R.drawable.ic_baseline_loading_24)
+                    .error(R.drawable.ic_baseline_non_loaded_image_24)
+                    .timeout(10_000)
+                    .into(attachmentImageView)
+
+                attachmentImageView.setOnClickListener {
+                    onInteractionListener.onPhotoView(post.attachment.url)
+                }
+            } else {
+                attachmentImageView.visibility = View.GONE
+            }
 
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
