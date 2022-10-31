@@ -9,6 +9,7 @@
     <string name="menu_remove">Remove</string>
     <string name="post_text">Post Text</string>
     <string name="menu_edit">Edit</string>
+    <string name="menu_save">Save</string>
     <string name="error_empty_content">Content can\'t be empty</string>
     <string name="chooser_share_post">Share post</string>
     <string name="add_post">Add post</string>
@@ -22,4 +23,8 @@
     <string name="channel_remote_description">Notifications from remote server</string>
     <string name="there_are_new_posts">There are new posts</string>
     <string name="not_saved_text">Not saved</string>
+    <string name="description_select_photo">Select photo</string>
+    <string name="description_take_photo">Take photo</string>
+    <string name="description_photo">Photo</string>
+    <string name="remove">Remove</string>
 </resources>
