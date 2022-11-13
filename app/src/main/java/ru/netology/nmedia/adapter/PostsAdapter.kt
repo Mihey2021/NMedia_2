@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -53,6 +54,8 @@ class PostViewHolder(
             like.text = "${post.likes}"
             like.isEnabled = !post.notSaved
             share.isEnabled = !post.notSaved
+
+            menu.isVisible = post.ownedByMe
 
             val attachment = post.attachment
             if (attachment != null && attachment.type == AttachmentType.IMAGE) {

@@ -12,6 +12,7 @@ data class PostEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long,
     val author: String,
+    val authorId: Long,
     val authorAvatar: String,
     val content: String,
     val published: String,
@@ -22,11 +23,11 @@ data class PostEntity(
     @Embedded
     var attachment: AttachmentEmbeddable?,
 ) {
-    fun toDto() = Post(id, author, authorAvatar, content, published, likedByMe, likes, notSaved, attachment?.toDto())
+    fun toDto() = Post(id, author, authorId, authorAvatar, content, published, likedByMe, likes, notSaved, attachment?.toDto())
 
     companion object {
         fun fromDto(dto: Post) =
-            PostEntity(dto.id, dto.author, dto.authorAvatar, dto.content, dto.published, dto.likedByMe, dto.likes, dto.notSaved, attachment = AttachmentEmbeddable?.fromDto(dto.attachment))
+            PostEntity(dto.id, dto.author, dto.authorId, dto.authorAvatar, dto.content, dto.published, dto.likedByMe, dto.likes, dto.notSaved, attachment = AttachmentEmbeddable?.fromDto(dto.attachment))
 
     }
 }
