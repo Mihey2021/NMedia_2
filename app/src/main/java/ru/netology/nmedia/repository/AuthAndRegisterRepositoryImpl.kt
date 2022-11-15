@@ -62,7 +62,13 @@ class AuthAndRegisterRepositoryImpl : AuthAndRegisterRepository {
                 "avatar", avatar.file.name, avatar.file.asRequestBody()
             )
             val response = PostsApi.service.registerWithPhoto(login, pass, name, media)
-            if (!response.isSuccessful) throw ApiError(response.code(), response.message())
+            if (!response.isSuccessful) {
+                //Если пользователь с таким логином существует, сервер возвращает код 403
+                if (response.code() == 403)
+                    throw RegistrationError
+                else
+                    throw ApiError(response.code(), response.message())
+            }
             return response.body() ?: throw ApiError(response.code(), response.message())
         } catch (e: RegistrationError) {
             throw RegistrationError
