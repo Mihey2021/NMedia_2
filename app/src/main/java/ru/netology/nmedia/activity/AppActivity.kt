@@ -17,9 +17,14 @@ import com.google.firebase.messaging.FirebaseMessaging
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.auth.AppAuth
+import ru.netology.nmedia.view.MenuState
+import ru.netology.nmedia.view.MenuStates
 import ru.netology.nmedia.viewmodel.AuthViewModel
 
 class AppActivity : AppCompatActivity(R.layout.activity_app) {
+
+    var menuState = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -43,8 +48,6 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
                 )
         }
 
-        lifecycleScope
-
         checkGoogleApiAvailability()
 
         val authViewModel by viewModels<AuthViewModel>()
@@ -57,25 +60,36 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
                 override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                     menuInflater.inflate(R.menu.menu_main, menu)
                     val authorized = authViewModel.authorized
-                    menu.setGroupVisible(R.id.authenticated, authorized)
-                    menu.setGroupVisible(R.id.unauthenticated, !authorized)
+                    if (MenuState.getMenuState() == MenuStates.SHOW_STATE) {
+                        menu.setGroupVisible(R.id.authenticated, authorized)
+                        menu.setGroupVisible(R.id.unauthenticated, !authorized)
+                    } else {
+                        menu.setGroupVisible(R.id.authenticated, false)
+                        menu.setGroupVisible(R.id.unauthenticated, false)
+                    }
+
                 }
 
                 override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
                      when (menuItem.itemId) {
                         R.id.signIn -> {
                             //AppAuth.getInstance().setAuth(5, "x-token")
-                            clearMenuProvider(currentMenuProvider)
+                            //clearMenuProvider(currentMenuProvider)
                             findNavController(R.id.nav_host_fragment).navigate(R.id.action_feedFragment_to_authFragment)
                             true
                         }
                         R.id.signUp -> {
-                            AppAuth.getInstance().setAuth(5, "x-token")
+                            //AppAuth.getInstance().setAuth(5, "x-token")
+                            findNavController(R.id.nav_host_fragment).navigate(R.id.action_feedFragment_to_registrationFragment)
                             true
                         }
                         R.id.logout -> {
-                            AppAuth.getInstance().removeAuth()
-                            true
+                            if(MenuState.getMenuState() == MenuStates.SHOW_STATE) {
+                                AppAuth.getInstance().removeAuth()
+                                true
+                            } else {
+                                false
+                            }
                         }
                         else -> false
                     }

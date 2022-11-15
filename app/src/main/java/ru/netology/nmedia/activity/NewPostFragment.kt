@@ -1,9 +1,12 @@
 package ru.netology.nmedia.activity
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toFile
 import androidx.core.view.MenuProvider
@@ -14,9 +17,14 @@ import com.github.dhaval2404.imagepicker.ImagePicker
 import com.github.dhaval2404.imagepicker.constant.ImageProvider
 import com.google.android.material.snackbar.Snackbar
 import ru.netology.nmedia.R
+import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
+import ru.netology.nmedia.dialogs.NetologyDialogs
+import ru.netology.nmedia.dialogs.OnDialogsInteractionListener
 import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.util.StringArg
+import ru.netology.nmedia.view.MenuState
+import ru.netology.nmedia.view.MenuStates
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 class NewPostFragment : Fragment() {
@@ -105,6 +113,9 @@ class NewPostFragment : Fragment() {
             binding.photo.setImageURI(it.uri)
         }
 
+        MenuState.setMenuState(MenuStates.HIDE_STATE)
+        requireActivity().invalidateMenu()
+
         requireActivity().addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu_new_post, menu)
@@ -120,12 +131,30 @@ class NewPostFragment : Fragment() {
                         }
                         true
                     }
+                    R.id.logout -> {
+                        showLogoutQuestionDialog()
+                        true
+                    }
                     else -> false
                 }
 
         }, viewLifecycleOwner)
 
         return binding.root
+    }
+
+    private fun showLogoutQuestionDialog() {
+        NetologyDialogs.getDialog(requireContext(), NetologyDialogs.QUESTION_DIALOG,
+            title = getString(R.string.logout),
+            message = getString(R.string.do_you_really_want_to_get_out),
+            titleIcon = R.drawable.ic_baseline_logout_24,
+            positiveButtonTitle = getString(R.string.yes_text),
+            onDialogsInteractionListener = object : OnDialogsInteractionListener {
+                override fun onPositiveClickButton() {
+                    AppAuth.getInstance().removeAuth()
+                    findNavController().navigateUp()
+                }
+            })
     }
 
     override fun onDestroyView() {

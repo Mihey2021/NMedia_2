@@ -38,7 +38,7 @@ android {
         }
         debug {
             manifestPlaceholders.usesCleartextTraffic = true
-            buildConfigField "String", "BASE_URL", '"http://10.0.2.2:9999"'
+            buildConfigField "String", "BASE_URL", '"http://192.168.1.36:9999"'
         }
     }
     namespace 'ru.netology.nmedia'
@@ -96,6 +96,9 @@ dependencies {
     implementation "com.google.android.gms:play-services-base:$play_services_base_version"
     //Camera, Gallery, etc.
     implementation "com.github.dhaval2404:imagepicker:$imagepicker_version"
+    //Круговое представление изображения
+    def circleImageview_version = "3.1.0"
+    implementation "de.hdodenhof:circleimageview:$circleImageview_version"
 
     testImplementation "junit:junit:$junit_version"
     androidTestImplementation "androidx.test.ext:junit:$ext_junit_version"

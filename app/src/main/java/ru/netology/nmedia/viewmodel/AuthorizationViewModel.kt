@@ -7,12 +7,12 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.dto.Token
 import ru.netology.nmedia.model.FeedModelState
-import ru.netology.nmedia.repository.AuthRepository
-import ru.netology.nmedia.repository.AuthRepositoryImpl
+import ru.netology.nmedia.repository.AuthAndRegisterRepository
+import ru.netology.nmedia.repository.AuthAndRegisterRepositoryImpl
 
-class AuthorizationViewModel: ViewModel() {
+class AuthorizationViewModel : ViewModel() {
 
-    private val repository: AuthRepository = AuthRepositoryImpl()
+    private val repository: AuthAndRegisterRepository = AuthAndRegisterRepositoryImpl()
 
     private val _dataState = MutableLiveData<FeedModelState>()
     val dataState: LiveData<FeedModelState>
@@ -22,7 +22,7 @@ class AuthorizationViewModel: ViewModel() {
     val authorizationData: LiveData<Token?>
         get() = _authorizationData
 
-    fun getAuthorizationToken(login: String, pass: String) {
+    fun authorization(login: String, pass: String) {
         viewModelScope.launch {
             try {
                 _dataState.value = FeedModelState(loading = true)
@@ -33,7 +33,5 @@ class AuthorizationViewModel: ViewModel() {
                 _dataState.value = FeedModelState(error = true, errorMessage = e.message)
             }
         }
-
     }
-
 }

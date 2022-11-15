@@ -38,4 +38,18 @@
     <string name="an_error_has_occurred">Произошла ошибка</string>
     <string name="ok_text">Ok</string>
     <string name="authorization">Авторизация</string>
+    <string name="do_you_want_to_login">Вы не авторизованы.\nПройти авторизацию?</string>
+    <string name="cancel_text">Отмена</string>
+    <string name="do_you_really_want_to_get_out">Вы действительно хотите выйти?\nВсе несохраненные данные будут потеряны.</string>
+    <string name="yes_text">Да</string>
+    <string name="registration_text">Регистрация</string>
+    <string name="register_text">Зарегистрироваться</string>
+    <string name="name_text">Имя</string>
+    <string name="password_confirmation_text">Подтверждение пароля</string>
+    <string name="enter_yor_name">Укажите имя</string>
+    <string name="confirm_your_password">Подтвердите пароль</string>
+    <string name="passwords_dont_match">Пароли не совпадают</string>
+    <string name="an_unknown_error_has_occurred">Произошла неизвестная ошибка</string>
+    <string name="take_photo_text">Сделать фото</string>
+    <string name="choose_photo_text">Выбрать фото</string>
 </resources>

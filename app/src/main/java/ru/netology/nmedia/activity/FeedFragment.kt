@@ -1,10 +1,15 @@
 package ru.netology.nmedia.activity
 
+import android.app.AlertDialog
+import android.content.DialogInterface
+import android.content.DialogInterface.OnClickListener
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -20,7 +25,11 @@ import ru.netology.nmedia.activity.ViewPhotoFragment.Companion.attachmentPhotoUr
 import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
+import ru.netology.nmedia.dialogs.NetologyDialogs
+import ru.netology.nmedia.dialogs.OnDialogsInteractionListener
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.view.MenuState
+import ru.netology.nmedia.view.MenuStates
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 class FeedFragment : Fragment() {
@@ -55,7 +64,10 @@ class FeedFragment : Fragment() {
             }
 
             override fun onLike(post: Post) {
-                viewModel.likeById(post.id, post.likedByMe)
+                if (!viewModel.authorized)
+                    showAuthorizationQuestionDialog()
+                else
+                    viewModel.likeById(post.id, post.likedByMe)
             }
 
             override fun onRemove(post: Post) {
@@ -75,7 +87,9 @@ class FeedFragment : Fragment() {
             }
 
             override fun onPhotoView(photoUrl: String) {
-                findNavController().navigate(R.id.action_feedFragment_to_viewPhotoFragment, Bundle().apply { attachmentPhotoUrl = photoUrl })
+                findNavController().navigate(
+                    R.id.action_feedFragment_to_viewPhotoFragment,
+                    Bundle().apply { attachmentPhotoUrl = photoUrl })
             }
         })
         binding.list.adapter = adapter
@@ -102,9 +116,33 @@ class FeedFragment : Fragment() {
         }
 
         binding.fab.setOnClickListener {
-            findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+            if (!viewModel.authorized)
+                showAuthorizationQuestionDialog()
+            else
+                findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+
         }
 
         return binding.root
+    }
+
+    private fun showAuthorizationQuestionDialog() {
+        NetologyDialogs.getDialog(requireContext(),
+            NetologyDialogs.QUESTION_DIALOG,
+            title = getString(R.string.authorization),
+            message = getString(R.string.do_you_want_to_login),
+            titleIcon = R.drawable.ic_baseline_lock_24,
+            positiveButtonTitle = getString(R.string.yes_text),
+            onDialogsInteractionListener = object : OnDialogsInteractionListener {
+                override fun onPositiveClickButton() {
+                    findNavController().navigate(R.id.action_feedFragment_to_authFragment)
+                }
+            })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        MenuState.setMenuState(MenuStates.SHOW_STATE)
+        requireActivity().invalidateMenu()
     }
 }

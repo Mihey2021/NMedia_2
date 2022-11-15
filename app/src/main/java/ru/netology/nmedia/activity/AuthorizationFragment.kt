@@ -1,30 +1,29 @@
 package ru.netology.nmedia.activity
 
-import android.app.AlertDialog
-import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.KeyEvent
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.OnKeyListener
 import android.view.ViewGroup
-import android.view.ViewGroup.MarginLayoutParams
 import android.widget.LinearLayout
 import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.annotation.RequiresApi
-import androidx.core.view.marginTop
-import androidx.core.view.setMargins
+import androidx.appcompat.app.AlertDialog
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.R
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.FragmentAuthorizationBinding
-import ru.netology.nmedia.error.AuthorizationError
+import ru.netology.nmedia.dialogs.NetologyDialogs
+import ru.netology.nmedia.dialogs.OnDialogsInteractionListener
 import ru.netology.nmedia.util.AndroidUtils
+import ru.netology.nmedia.view.MenuState
+import ru.netology.nmedia.view.MenuStates
 import ru.netology.nmedia.viewmodel.AuthorizationViewModel
 
 class AuthorizationFragment : Fragment() {
@@ -40,12 +39,15 @@ class AuthorizationFragment : Fragment() {
 
         val binding = FragmentAuthorizationBinding.inflate(inflater, container, false)
 
+        MenuState.setMenuState(MenuStates.HIDE_STATE)
+        requireActivity().invalidateMenu()
+
         with(binding) {
             signInButton.setOnClickListener {
                 if (checkForm(binding)) {
                     AndroidUtils.hideKeyboard(requireView())
                     //Авторизация на сервере
-                    viewModel.getAuthorizationToken(
+                    viewModel.authorization(
                         binding.loginEditText.text.toString(),
                         binding.passwordEditText.text.toString()
                     )
@@ -90,32 +92,22 @@ class AuthorizationFragment : Fragment() {
             dialog?.dismiss()
 
             if (it.loading) {
-                dialog = AlertDialog.Builder(requireContext())
-                    .setTitle(getString(R.string.authorization))
-                    .setView(ProgressBar(requireContext()).apply {
-                        this.layoutParams = LinearLayout.LayoutParams(
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT
-                        ).apply {
-                            setPadding(0, 52, 0, 52)
-                        }
-                    }
-
-                    )
-
-                    .setCancelable(false)
-                    .show()
+                dialog = NetologyDialogs.getDialog(
+                    requireContext(),
+                    NetologyDialogs.PROGRESS_DIALOG,
+                    title = getString(R.string.authorization)
+                )
             }
 
             if (it.error) {
-                dialog = AlertDialog.Builder(requireContext())
-                    .setTitle(it.errorMessage)
-                    .setIcon(R.drawable.ic_baseline_error_24)
-                    .setCancelable(true)
-                    .setPositiveButton(R.string.ok_text) { _, _ ->
-                        dialog?.dismiss()
-                    }
-                    .show()
+                dialog = NetologyDialogs.getDialog(
+                    requireContext(),
+                    NetologyDialogs.ERROR_DIALOG,
+                    title = getString(R.string.authorization),
+                    message = it.errorMessage ?: getString(R.string.an_error_has_occurred),
+                    titleIcon = R.drawable.ic_baseline_error_24,
+                    isCancelable = true
+                )
             }
         }
 
@@ -137,6 +129,4 @@ class AuthorizationFragment : Fragment() {
 
         return isCorrect
     }
-
-
 }

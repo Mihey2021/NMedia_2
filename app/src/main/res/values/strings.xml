@@ -37,4 +37,19 @@
     <string name="an_error_has_occurred">An error has occurred</string>
     <string name="ok_text">Ok</string>
     <string name="authorization">Authorization</string>
+    <string name="do_you_want_to_login">You are not logged in.\nPass authorization?</string>
+    <string name="cancel_text">Cancel</string>
+    <string name="do_you_really_want_to_get_out">Do you really want to get out?\nAll unsaved data will be lost.</string>
+    <string name="yes_text">Yes</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="registration_text">Registration</string>
+    <string name="register_text">Register</string>
+    <string name="name_text">Name</string>
+    <string name="password_confirmation_text">Password confirmation</string>
+    <string name="enter_yor_name">Enter your name</string>
+    <string name="confirm_your_password">Confirm your password</string>
+    <string name="passwords_dont_match">Passwords don\'t match</string>
+    <string name="an_unknown_error_has_occurred">An unknown error has occurred</string>
+    <string name="take_photo_text">Take a photo</string>
+    <string name="choose_photo_text">Choose a photo</string>
 </resources>
