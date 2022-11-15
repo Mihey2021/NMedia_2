@@ -63,7 +63,7 @@ class AuthAndRegisterRepositoryImpl : AuthAndRegisterRepository {
             )
             val response = PostsApi.service.registerWithPhoto(login, pass, name, media)
             if (!response.isSuccessful) {
-                //Если пользователь с таким логином существует, сервер возвращает код 403
+                //Если пользователь с таким логином существует, сервер возвращает код 403.
                 if (response.code() == 403)
                     throw RegistrationError
                 else
