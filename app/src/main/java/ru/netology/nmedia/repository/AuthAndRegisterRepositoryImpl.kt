@@ -59,7 +59,7 @@ class AuthAndRegisterRepositoryImpl : AuthAndRegisterRepository {
     ): Token {
         try {
             val media = MultipartBody.Part.createFormData(
-                "file", avatar.file.name, avatar.file.asRequestBody()
+                "media", avatar.file.name, avatar.file.asRequestBody()
             )
             val response = PostsApi.service.registerWithPhoto(login, pass, name, media)
             if (!response.isSuccessful) {
