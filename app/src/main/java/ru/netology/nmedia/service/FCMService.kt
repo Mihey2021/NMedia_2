@@ -10,6 +10,8 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
 import ru.netology.nmedia.R
+import ru.netology.nmedia.auth.AppAuth
+import ru.netology.nmedia.dto.PushMessage
 import kotlin.random.Random
 
 
@@ -36,14 +38,49 @@ class FCMService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
 
         message.data[action]?.let {
-           when (Action.valueOf(it)) {
-              Action.LIKE -> handleLike(gson.fromJson(message.data[content], Like::class.java))
-           }
+            when (Action.valueOf(it)) {
+                Action.LIKE -> handleLike(gson.fromJson(message.data[content], Like::class.java))
+            }
         }
+
+        try {
+            val pushMessage = gson.fromJson(message.data[content], PushMessage::class.java)
+            when (pushMessage.recipientId) {
+                null -> {
+                    handlePushMessage(pushMessage.content, getString(R.string.mass_mailing_text))
+                }
+                AppAuth.getInstance().authStateFlow.value?.id -> {
+                    handlePushMessage(
+                        pushMessage.content,
+                        getString(R.string.direct_mailing_for_you)
+                    )
+                }
+                else -> {
+                    AppAuth.getInstance().sendPushToken()
+                }
+            }
+        } catch (e: Exception) {
+            //Сообщение другой структуры
+            e.printStackTrace()
+        }
+
+
     }
 
     override fun onNewToken(token: String) {
-        println(token)
+        AppAuth.getInstance().sendPushToken(token)
+    }
+
+    private fun handlePushMessage(message: String, type: String) {
+        val notification = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle(type)
+            .setContentText(message)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .build()
+
+        NotificationManagerCompat.from(this)
+            .notify(Random.nextInt(100_000), notification)
     }
 
     private fun handleLike(content: Like) {

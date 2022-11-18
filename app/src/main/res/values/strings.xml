@@ -52,4 +52,7 @@
     <string name="an_unknown_error_has_occurred">An unknown error has occurred</string>
     <string name="take_photo_text">Take a photo</string>
     <string name="choose_photo_text">Choose a photo</string>
+    <string name="mass_mailing_text">Mass mailing</string>
+    <string name="server_notification_text">Server notification</string>
+    <string name="direct_mailing_for_you">Direct mailing for you</string>
 </resources>

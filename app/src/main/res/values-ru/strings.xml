@@ -52,4 +52,7 @@
     <string name="an_unknown_error_has_occurred">Произошла неизвестная ошибка</string>
     <string name="take_photo_text">Сделать фото</string>
     <string name="choose_photo_text">Выбрать фото</string>
+    <string name="mass_mailing_text">Массовая рассылка</string>
+    <string name="server_notification_text">Уведомление сервера</string>
+    <string name="direct_mailing_for_you">Адресная рассылка для Вас</string>
 </resources>
