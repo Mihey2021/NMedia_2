@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -15,9 +16,12 @@ import ru.netology.nmedia.model.PhotoModel
 import ru.netology.nmedia.repository.AuthAndRegisterRepository
 import ru.netology.nmedia.repository.AuthAndRegisterRepositoryImpl
 import java.io.File
+import javax.inject.Inject
 
-class RegistrationViewModel : ViewModel() {
-    private val repository: AuthAndRegisterRepository = AuthAndRegisterRepositoryImpl()
+@HiltViewModel
+class RegistrationViewModel @Inject constructor(
+    private val repository: AuthAndRegisterRepository,
+) : ViewModel() {
 
     private val _dataState = MutableLiveData<FeedModelState>()
     val dataState: LiveData<FeedModelState>

@@ -5,25 +5,37 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.ViewDebug.IntToString
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.messaging.FirebaseMessaging
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.view.MenuState
 import ru.netology.nmedia.view.MenuStates
 import ru.netology.nmedia.viewmodel.AuthViewModel
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class AppActivity : AppCompatActivity(R.layout.activity_app) {
 
-    var menuState = 0
+    private val authViewModel: AuthViewModel by viewModels()
+
+    @Inject
+    lateinit var appAuth: AppAuth
+
+    @Inject
+    lateinit var firebaseMessaging: FirebaseMessaging
+
+    @Inject
+    lateinit var googleApiAvailability: GoogleApiAvailability
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,12 +62,9 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
 
         checkGoogleApiAvailability()
 
-        val authViewModel by viewModels<AuthViewModel>()
         var currentMenuProvider: MenuProvider? = null
         authViewModel.authData.observe(this) {
-            //currentMenuProvider?.also { ::removeMenuProvider }
             clearMenuProvider(currentMenuProvider)
-
             addMenuProvider(object : MenuProvider {
                 override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                     menuInflater.inflate(R.menu.menu_main, menu)
@@ -71,21 +80,18 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
                 }
 
                 override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
-                     when (menuItem.itemId) {
+                    when (menuItem.itemId) {
                         R.id.signIn -> {
-                            //AppAuth.getInstance().setAuth(5, "x-token")
-                            //clearMenuProvider(currentMenuProvider)
                             findNavController(R.id.nav_host_fragment).navigate(R.id.action_feedFragment_to_authFragment)
                             true
                         }
                         R.id.signUp -> {
-                            //AppAuth.getInstance().setAuth(5, "x-token")
                             findNavController(R.id.nav_host_fragment).navigate(R.id.action_feedFragment_to_registrationFragment)
                             true
                         }
                         R.id.logout -> {
-                            if(MenuState.getMenuState() == MenuStates.SHOW_STATE) {
-                                AppAuth.getInstance().removeAuth()
+                            if (MenuState.getMenuState() == MenuStates.SHOW_STATE) {
+                                appAuth.removeAuth()
                                 true
                             } else {
                                 false
@@ -104,7 +110,7 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
     }
 
     private fun checkGoogleApiAvailability() {
-        with(GoogleApiAvailability.getInstance()) {
+        with(googleApiAvailability) {
             val code = isGooglePlayServicesAvailable(this@AppActivity)
             if (code == ConnectionResult.SUCCESS) {
                 return@with
@@ -117,7 +123,7 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
                 .show()
         }
 
-        FirebaseMessaging.getInstance().token.addOnSuccessListener {
+        firebaseMessaging.token.addOnSuccessListener {
             println(it)
         }
     }

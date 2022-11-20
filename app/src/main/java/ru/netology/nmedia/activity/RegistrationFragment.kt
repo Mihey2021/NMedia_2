@@ -4,20 +4,19 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
-import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.net.toFile
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.github.dhaval2404.imagepicker.constant.ImageProvider
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.FragmentRegistrationBinding
@@ -26,10 +25,16 @@ import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.view.MenuState
 import ru.netology.nmedia.view.MenuStates
 import ru.netology.nmedia.viewmodel.RegistrationViewModel
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class RegistrationFragment : Fragment() {
 
     private val viewModel by viewModels<RegistrationViewModel>()
+
+    @Inject
+    lateinit var appAuth: AppAuth
+
     private var dialog: AlertDialog? = null
 
     @SuppressLint("ClickableViewAccessibility")
@@ -124,7 +129,7 @@ class RegistrationFragment : Fragment() {
         viewModel.registrationData.observe(viewLifecycleOwner) { token ->
             if (token == null) return@observe
 
-            AppAuth.getInstance().setAuth(token.id, token.token ?: "")
+            appAuth.setAuth(token.id, token.token ?: "")
             findNavController().navigateUp()
         }
 

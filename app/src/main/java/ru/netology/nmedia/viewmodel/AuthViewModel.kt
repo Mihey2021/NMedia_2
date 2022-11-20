@@ -3,14 +3,19 @@ package ru.netology.nmedia.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.dto.Token
+import javax.inject.Inject
 
-class AuthViewModel : ViewModel() {
+@HiltViewModel
+class AuthViewModel @Inject constructor(
+    private val appAuth: AppAuth,
+) : ViewModel() {
 
-    val authData: LiveData<Token?> = AppAuth.getInstance().authStateFlow.asLiveData(Dispatchers.Default)
+    val authData: LiveData<Token?> = appAuth.authStateFlow.asLiveData(Dispatchers.Default)
 
     val authorized: Boolean
-        get() = AppAuth.getInstance().authStateFlow?.value?.token != null
+        get() = appAuth.authStateFlow?.value?.token != null
 }

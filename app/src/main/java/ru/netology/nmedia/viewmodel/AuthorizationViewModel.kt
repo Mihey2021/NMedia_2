@@ -4,15 +4,19 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.dto.Token
 import ru.netology.nmedia.model.FeedModelState
 import ru.netology.nmedia.repository.AuthAndRegisterRepository
 import ru.netology.nmedia.repository.AuthAndRegisterRepositoryImpl
+import javax.inject.Inject
 
-class AuthorizationViewModel : ViewModel() {
+@HiltViewModel
+class AuthorizationViewModel @Inject constructor(
+    private val repository: AuthAndRegisterRepository,
+) : ViewModel() {
 
-    private val repository: AuthAndRegisterRepository = AuthAndRegisterRepositoryImpl()
 
     private val _dataState = MutableLiveData<FeedModelState>()
     val dataState: LiveData<FeedModelState>

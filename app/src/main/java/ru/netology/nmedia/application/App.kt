@@ -1,11 +1,19 @@
 package ru.netology.nmedia.application
 
 import android.app.Application
-import ru.netology.nmedia.auth.AppAuth
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
+import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 
-class App: Application() {
-    override fun onCreate() {
-        super.onCreate()
-        AppAuth.initAuth(this)
-    }
+@HiltAndroidApp
+class App : Application(), Configuration.Provider {
+
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
+
+    override fun getWorkManagerConfiguration() =
+        Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .build()
 }
