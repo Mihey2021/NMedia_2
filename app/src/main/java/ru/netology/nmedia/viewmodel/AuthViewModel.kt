@@ -17,5 +17,5 @@ class AuthViewModel @Inject constructor(
     val authData: LiveData<Token?> = appAuth.authStateFlow.asLiveData(Dispatchers.Default)
 
     val authorized: Boolean
-        get() = appAuth.authStateFlow?.value?.token != null
+        get() = appAuth.authStateFlow.value.token != null
 }
