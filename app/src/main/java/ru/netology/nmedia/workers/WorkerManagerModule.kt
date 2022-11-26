@@ -23,7 +23,7 @@ class WorkerManagerModule {
         return WorkManager.getInstance(context)
     }
 
-    @Singleton
-    @Provides
-    fun provideTokenKey() = WorkerKeys()
+//    @Singleton
+//    @Provides
+//    fun provideTokenKey() = WorkerKeys()
 }
