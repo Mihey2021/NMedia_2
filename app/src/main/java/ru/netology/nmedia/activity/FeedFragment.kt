@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearSmoothScroller
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.ViewPhotoFragment.Companion.attachmentPhotoUrl
 import ru.netology.nmedia.adapter.OnInteractionListener
@@ -93,7 +94,7 @@ class FeedFragment : Fragment() {
 
         viewModel.dataState.observe(viewLifecycleOwner) { state ->
             binding.progress.isVisible = state.loading
-            binding.swiperefresh.isRefreshing = state.refreshing
+            //binding.swiperefresh.isRefreshing = state.refreshing
             if (state.error) {
                 Snackbar.make(binding.root, R.string.error_loading, Snackbar.LENGTH_LONG)
                     .setAction(R.string.retry_loading) { viewModel.loadPosts() }
@@ -122,15 +123,15 @@ class FeedFragment : Fragment() {
                         || it.append is LoadState.Loading
                         || it.prepend is LoadState.Loading
             }
+
         }
 
         viewModel.authData.observe(viewLifecycleOwner) {
-            adapter.refresh()
+            //adapter.refresh()
         }
 
         binding.swiperefresh.setOnRefreshListener {
-            //viewModel.refreshPosts()
-            adapter.refresh()
+            viewModel.loadPosts()
         }
 
         binding.fab.setOnClickListener {

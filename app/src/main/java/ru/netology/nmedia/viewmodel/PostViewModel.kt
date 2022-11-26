@@ -114,6 +114,7 @@ class PostViewModel @Inject constructor(
             withContext(Dispatchers.IO) { repository.processingNotSavedPosts() }
             _dataState.value = FeedModelState(refreshing = true)
             repository.getAll()
+            //repository.getPagingSource()
             _dataState.value = FeedModelState()
         } catch (e: Exception) {
             _dataState.value = FeedModelState(error = true)

@@ -46,6 +46,7 @@ android {
 }
 
 dependencies {
+
     def core_version = "1.9.0"
     def appcompat_version = "1.5.1"
     def constraintlayout_version = "2.1.4"
@@ -103,6 +104,7 @@ dependencies {
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
 
     implementation "androidx.paging:paging-runtime-ktx:$paging_version"
+    implementation "androidx.room:room-paging:$room_version"
 
     implementation("androidx.hilt:hilt-work:1.0.0")
     // When using Kotlin.
