@@ -1,6 +1,5 @@
 package ru.netology.nmedia.repository
 
-import android.util.Log
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -22,15 +21,19 @@ import ru.netology.nmedia.error.AppError
 import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError
 import java.io.IOException
+import javax.inject.Inject
 
-class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
+class PostRepositoryImpl @Inject constructor(
+    private val dao: PostDao,
+    private val apiService: ApiService,
+    ) : PostRepository {
     override val data = dao.getAll()
         .map(List<PostEntity>::toDto)
         .flowOn(Dispatchers.Default)
 
     override suspend fun getAll() {
         try {
-            val response = PostsApi.service.getAll()
+            val response = apiService.getAll()
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -48,7 +51,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
         while (true) {
             delay(10_000L)
             val notShowingPostsCount = dao.count()
-            val response = PostsApi.service.getNewer(id + notShowingPostsCount)
+            val response = apiService.getNewer(id + notShowingPostsCount)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -84,7 +87,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
             val id = dao.getNotSavedPostById(post.id)?.id ?: ((dao.getMinNotSavePostId() ?: 0L) - 1L)
             val notSaved = (id == post.id)
             dao.insert(PostEntity.fromDto(post.copy(id = id)).copy(notSaved = true))
-            val response = if (notSaved) PostsApi.service.save(post.copy(id = 0L)) else PostsApi.service.save(post)
+            val response = if (notSaved) apiService.save(post.copy(id = 0L)) else apiService.save(post)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -101,7 +104,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
 
     override suspend fun removeById(id: Long) {
         try {
-            val response = PostsApi.service.removeById(id)
+            val response = apiService.removeById(id)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -120,7 +123,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
         }
 
         try {
-            val response = PostsApi.service.likeById(id)
+            val response = apiService.likeById(id)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -136,7 +139,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
 
     private suspend fun disLikeById(id: Long) {
         try {
-            val response = PostsApi.service.dislikeById(id)
+            val response = apiService.dislikeById(id)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -170,7 +173,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
                 "file", upload.file.name, upload.file.asRequestBody()
             )
 
-            val response = PostsApi.service.upload(media)
+            val response = apiService.upload(media)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }

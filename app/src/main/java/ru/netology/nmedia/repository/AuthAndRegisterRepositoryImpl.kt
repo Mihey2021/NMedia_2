@@ -3,17 +3,20 @@ package ru.netology.nmedia.repository
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import ru.netology.nmedia.api.PostsApi
+import ru.netology.nmedia.api.ApiService
 import ru.netology.nmedia.dto.MediaUpload
 import ru.netology.nmedia.dto.Token
 import ru.netology.nmedia.error.*
 import java.io.IOException
+import javax.inject.Inject
 
-class AuthAndRegisterRepositoryImpl : AuthAndRegisterRepository {
+class AuthAndRegisterRepositoryImpl @Inject constructor(
+    private val apiService: ApiService,
+): AuthAndRegisterRepository {
 
     override suspend fun authentication(login: String, pass: String): Token {
         try {
-            val response = PostsApi.service.authentication(login, pass)
+            val response = apiService.authentication(login, pass)
             if (!response.isSuccessful) {
                 //При неверном пароле сервер возвращает код 400, при неверном логине 404
                 if (response.code() == 400 || response.code() == 404)
@@ -33,7 +36,7 @@ class AuthAndRegisterRepositoryImpl : AuthAndRegisterRepository {
 
     override suspend fun registration(login: String, pass: String, name: String): Token {
         try {
-            val response = PostsApi.service.registration(login, pass, name)
+            val response = apiService.registration(login, pass, name)
             if (!response.isSuccessful) {
                 //Если пользователь с таким логином существует, сервер возвращает код 403
                 if (response.code() == 403)
@@ -61,7 +64,7 @@ class AuthAndRegisterRepositoryImpl : AuthAndRegisterRepository {
             val media = MultipartBody.Part.createFormData(
                 "media", avatar.file.name, avatar.file.asRequestBody()
             )
-            val response = PostsApi.service.registerWithPhoto(login, pass, name, media)
+            val response = apiService.registerWithPhoto(login, pass, name, media)
             if (!response.isSuccessful) {
                 //Если пользователь с таким логином существует, сервер возвращает код 403.
                 if (response.code() == 403)

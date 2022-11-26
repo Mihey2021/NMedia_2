@@ -1,21 +1,20 @@
 package ru.netology.nmedia.activity
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toFile
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.github.dhaval2404.imagepicker.constant.ImageProvider
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
@@ -26,16 +25,19 @@ import ru.netology.nmedia.util.StringArg
 import ru.netology.nmedia.view.MenuState
 import ru.netology.nmedia.view.MenuStates
 import ru.netology.nmedia.viewmodel.PostViewModel
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class NewPostFragment : Fragment() {
 
     companion object {
         var Bundle.textArg: String? by StringArg
     }
 
-    private val viewModel: PostViewModel by viewModels(
-        ownerProducer = ::requireParentFragment
-    )
+    private val viewModel: PostViewModel by activityViewModels()
+
+    @Inject
+    lateinit var appAuth: AppAuth
 
     private var fragmentBinding: FragmentNewPostBinding? = null
 
@@ -151,7 +153,7 @@ class NewPostFragment : Fragment() {
             positiveButtonTitle = getString(R.string.yes_text),
             onDialogsInteractionListener = object : OnDialogsInteractionListener {
                 override fun onPositiveClickButton() {
-                    AppAuth.getInstance().removeAuth()
+                    appAuth.removeAuth()
                     findNavController().navigateUp()
                 }
             })

@@ -3,27 +3,27 @@ package ru.netology.nmedia.auth
 import android.content.Context
 import androidx.core.content.edit
 import androidx.work.*
-import com.google.firebase.messaging.FirebaseMessaging
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import ru.netology.nmedia.api.ApiService
-import ru.netology.nmedia.api.PostsApi
-import ru.netology.nmedia.dto.PushToken
 import ru.netology.nmedia.dto.Token
+import ru.netology.nmedia.dto.WorkerKeys
 import ru.netology.nmedia.workers.SendPushTokenWorker
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AppAuth private constructor(context: Context) {
+@Singleton
+class AppAuth @Inject constructor(
+    @ApplicationContext
+    private val context: Context,
+    private val workManager: WorkManager,
+    private val workerKeys: WorkerKeys,
+) {
 
     private val prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
     private val _authStateFlow: MutableStateFlow<Token?> = MutableStateFlow(null)
     val authStateFlow = _authStateFlow.asStateFlow()
 
-    private val workManager: WorkManager = WorkManager.getInstance(context)
 
     init {
         val token = prefs.getString(TOKEN_KEY, null)
@@ -37,7 +37,7 @@ class AppAuth private constructor(context: Context) {
     }
 
     fun sendPushToken(token: String? = null) {
-        val data = workDataOf(SendPushTokenWorker.TOKEN_KEY to token)
+        val data = workDataOf(workerKeys.tokenKey to token)
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
@@ -71,15 +71,5 @@ class AppAuth private constructor(context: Context) {
     companion object {
         private const val ID_KEY = "ID_KEY"
         private const val TOKEN_KEY = "TOKEN_KEY"
-
-        @Volatile
-        private var instance: AppAuth? = null
-
-        fun getInstance(): AppAuth = requireNotNull(instance)
-
-        fun initAuth(context: Context) {
-            instance = AppAuth(context)
-        }
-
     }
 }

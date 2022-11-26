@@ -1,19 +1,19 @@
 package ru.netology.nmedia.activity
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.R
-import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
-import ru.netology.nmedia.databinding.FragmentNewPostBinding
 import ru.netology.nmedia.databinding.FragmentViewPhotoBinding
 import ru.netology.nmedia.util.StringArg
 
 
+@AndroidEntryPoint
 class ViewPhotoFragment : Fragment() {
 
     override fun onCreateView(

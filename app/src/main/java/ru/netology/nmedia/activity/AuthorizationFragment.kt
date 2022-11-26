@@ -4,31 +4,33 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.MenuProvider
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.FragmentAuthorizationBinding
 import ru.netology.nmedia.dialogs.NetologyDialogs
-import ru.netology.nmedia.dialogs.OnDialogsInteractionListener
 import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.view.MenuState
 import ru.netology.nmedia.view.MenuStates
 import ru.netology.nmedia.viewmodel.AuthorizationViewModel
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class AuthorizationFragment : Fragment() {
 
-    private val viewModel by viewModels<AuthorizationViewModel>()
+    private val viewModel: AuthorizationViewModel by viewModels()
+
+    @Inject
+    lateinit var appAuth: AppAuth
+
     private var dialog: AlertDialog? = null
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -83,7 +85,7 @@ class AuthorizationFragment : Fragment() {
         viewModel.authorizationData.observe(viewLifecycleOwner) { token ->
             if (token == null) return@observe
 
-            AppAuth.getInstance().setAuth(token.id, token.token ?: "")
+            appAuth.setAuth(token.id, token.token ?: "")
             findNavController().navigateUp()
         }
 
