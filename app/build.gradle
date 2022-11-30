@@ -46,6 +46,7 @@ android {
 }
 
 dependencies {
+
     def core_version = "1.9.0"
     def appcompat_version = "1.5.1"
     def constraintlayout_version = "2.1.4"
@@ -69,6 +70,7 @@ dependencies {
     def play_services_base_version = "18.1.0"
     def imagepicker_version = "2.1"
     def workmanager_version = "2.7.1"
+    def paging_version = "3.2.0-alpha03"
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "androidx.core:core-ktx:$core_version"
@@ -100,6 +102,9 @@ dependencies {
     implementation "androidx.work:work-runtime-ktx:$workmanager_version"
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
+
+    implementation "androidx.paging:paging-runtime-ktx:$paging_version"
+    implementation "androidx.room:room-paging:$room_version"
 
     implementation("androidx.hilt:hilt-work:1.0.0")
     // When using Kotlin.
