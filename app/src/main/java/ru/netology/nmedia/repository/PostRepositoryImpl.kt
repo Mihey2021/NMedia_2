@@ -1,7 +1,6 @@
 package ru.netology.nmedia.repository
 
 import androidx.paging.*
-import androidx.room.withTransaction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -16,7 +15,6 @@ import ru.netology.nmedia.dto.Media
 import ru.netology.nmedia.dto.MediaUpload
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.entity.PostEntity
-import ru.netology.nmedia.entity.PostRemoteKeyEntity
 import ru.netology.nmedia.entity.toEntity
 import ru.netology.nmedia.enumeration.AttachmentType
 import ru.netology.nmedia.error.ApiError
@@ -31,8 +29,8 @@ const val PAGE_SIZE = 10
 class PostRepositoryImpl @Inject constructor(
     private val postDao: PostDao,
     private val apiService: ApiService,
-    private val postRemoteKeyDao: PostRemoteKeyDao,
-    private val appDb: AppDb,
+    postRemoteKeyDao: PostRemoteKeyDao,
+    appDb: AppDb,
 ) : PostRepository {
 //    override val data = dao.getAll()
 //        .map(List<PostEntity>::toDto)
@@ -57,33 +55,12 @@ class PostRepositoryImpl @Inject constructor(
 
     override suspend fun getAll() {
         try {
-            val id = postRemoteKeyDao.max()
-            val response =
-                if (id == null) apiService.getAll() else apiService.getAfter(id, PAGE_SIZE)
+            val response = apiService.getAll()
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
-
             val body = response.body() ?: throw ApiError(response.code(), response.message())
-
-            appDb.withTransaction {
-                postRemoteKeyDao.insert(
-                    PostRemoteKeyEntity(
-                        PostRemoteKeyEntity.KeyType.AFTER,
-                        body.first().id
-                    )
-                )
-                if (id == null) {
-                    postRemoteKeyDao.insert(
-                        PostRemoteKeyEntity(
-                            PostRemoteKeyEntity.KeyType.BEFORE,
-                            body.last().id
-                        )
-                    )
-                }
-
-                postDao.insert(body.toEntity())
-            }
+            postDao.insert(body.toEntity())
         } catch (e: IOException) {
             throw NetworkError
         } catch (e: Exception) {

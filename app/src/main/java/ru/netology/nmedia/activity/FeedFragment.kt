@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.LinearSmoothScroller
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.ViewPhotoFragment.Companion.attachmentPhotoUrl
 import ru.netology.nmedia.adapter.OnInteractionListener
@@ -127,7 +126,7 @@ class FeedFragment : Fragment() {
         }
 
         viewModel.authData.observe(viewLifecycleOwner) {
-            //adapter.refresh()
+            adapter.refresh()
         }
 
         binding.swiperefresh.setOnRefreshListener {
