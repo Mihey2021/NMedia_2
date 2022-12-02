@@ -5,6 +5,7 @@ import androidx.core.content.edit
 import androidx.work.*
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import ru.netology.nmedia.dto.Token
 import ru.netology.nmedia.dto.WorkerKeys
@@ -21,20 +22,22 @@ class AppAuth @Inject constructor(
 ) {
 
     private val prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
-    private val _authStateFlow: MutableStateFlow<Token?> = MutableStateFlow(null)
-    val authStateFlow = _authStateFlow.asStateFlow()
-
+    //private val _authStateFlow: MutableStateFlow<Token?> = MutableStateFlow(null)
+    private val _authStateFlow: MutableStateFlow<Token>
 
     init {
         val token = prefs.getString(TOKEN_KEY, null)
         val id = prefs.getLong(ID_KEY, 0L)
 
         if (token == null || id == 0L) {
+            _authStateFlow = MutableStateFlow(Token())
             removeAuth()
         } else {
-            _authStateFlow.value = Token(id, token)
+            _authStateFlow = MutableStateFlow(Token(id, token))
         }
     }
+
+    val authStateFlow:StateFlow<Token> = _authStateFlow.asStateFlow()
 
     fun sendPushToken(token: String? = null) {
         val data = workDataOf(workerKeys.tokenKey to token)
@@ -60,7 +63,8 @@ class AppAuth @Inject constructor(
 
     @Synchronized
     fun removeAuth() {
-        _authStateFlow.value = null
+        //_authStateFlow.value = null
+        _authStateFlow.value = Token()
         prefs.edit {
             remove(TOKEN_KEY)
             remove(ID_KEY)

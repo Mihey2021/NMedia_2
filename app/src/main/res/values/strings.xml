@@ -55,4 +55,8 @@
     <string name="mass_mailing_text">Mass mailing</string>
     <string name="server_notification_text">Server notification</string>
     <string name="direct_mailing_for_you">Direct mailing for you</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="last_week">Last week</string>
+
 </resources>
