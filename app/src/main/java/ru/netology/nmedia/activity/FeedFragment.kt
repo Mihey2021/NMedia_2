@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.collectLatest
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.ViewPhotoFragment.Companion.attachmentPhotoUrl
 import ru.netology.nmedia.adapter.OnInteractionListener
+import ru.netology.nmedia.adapter.PostLoadingStateAdapter
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.dialogs.NetologyDialogs
@@ -89,9 +90,23 @@ class FeedFragment : Fragment() {
             }
         })
 
-        binding.list.adapter = adapter
+        binding.list.adapter = adapter.withLoadStateHeaderAndFooter(
+            header = PostLoadingStateAdapter(object :
+                PostLoadingStateAdapter.OnInteractionListener {
+                override fun onRetry() {
+                    adapter.retry()
+                }
+            }),
+            footer = PostLoadingStateAdapter(object :
+                PostLoadingStateAdapter.OnInteractionListener {
+                override fun onRetry() {
+                    adapter.retry()
+                }
+            }),
+        )
 
         viewModel.dataState.observe(viewLifecycleOwner) { state ->
+            if (state.refreshing) adapter.refresh()
             binding.progress.isVisible = state.loading
             //binding.swiperefresh.isRefreshing = state.refreshing
             if (state.error) {
@@ -119,14 +134,13 @@ class FeedFragment : Fragment() {
         lifecycleScope.launchWhenCreated {
             adapter.loadStateFlow.collectLatest {
                 binding.swiperefresh.isRefreshing = it.refresh is LoadState.Loading
-                        || it.append is LoadState.Loading
-                        || it.prepend is LoadState.Loading
+//                        || it.append is LoadState.Loading
+//                        || it.prepend is LoadState.Loading
             }
-
         }
 
         viewModel.authData.observe(viewLifecycleOwner) {
-            adapter.refresh()
+            //adapter.refresh()
         }
 
         binding.swiperefresh.setOnRefreshListener {

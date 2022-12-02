@@ -1,19 +1,19 @@
 package ru.netology.nmedia.repository
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.paging.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.internal.toLongOrDefault
 import ru.netology.nmedia.api.*
 import ru.netology.nmedia.dao.PostDao
 import ru.netology.nmedia.dao.PostRemoteKeyDao
 import ru.netology.nmedia.db.AppDb
-import ru.netology.nmedia.dto.Attachment
-import ru.netology.nmedia.dto.Media
-import ru.netology.nmedia.dto.MediaUpload
-import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.dto.*
 import ru.netology.nmedia.entity.PostEntity
 import ru.netology.nmedia.entity.toEntity
 import ru.netology.nmedia.enumeration.AttachmentType
@@ -22,6 +22,9 @@ import ru.netology.nmedia.error.AppError
 import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError
 import java.io.IOException
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 const val PAGE_SIZE = 10
@@ -36,11 +39,12 @@ class PostRepositoryImpl @Inject constructor(
 //        .map(List<PostEntity>::toDto)
 //        .flowOn(Dispatchers.Default)
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @OptIn(ExperimentalPagingApi::class)
-    override val data: Flow<PagingData<Post>> = Pager(
+    override val data: Flow<PagingData<FeedItem>> = Pager(
         config = PagingConfig(
             pageSize = PAGE_SIZE,
-            initialLoadSize = PAGE_SIZE,
+            //initialLoadSize = PAGE_SIZE,
             enablePlaceholders = false
         ),
         pagingSourceFactory = { postDao.getPagingSource() },
@@ -51,7 +55,47 @@ class PostRepositoryImpl @Inject constructor(
             appDb = appDb,
         )
     ).flow
-        .map { it.map(PostEntity::toDto) }
+        .map {
+            var todayShowing = false
+            var yesterdayShowing = false
+            var lastWeekShowing = false
+            it.map(PostEntity::toDto)
+                .insertSeparators { previous, _ ->
+                    val currentDateInSeconds = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)
+                    if (previous != null) {
+                        val text = getTimingText(
+                            previous.published.toLongOrDefault(0L),
+                            currentDateInSeconds
+                        )
+                        if (text == Timing.TODAY && todayShowing) return@insertSeparators null
+                        if (text == Timing.YESTERDAY && yesterdayShowing) return@insertSeparators null
+                        if (text == Timing.LAST_WEEK && lastWeekShowing) return@insertSeparators null
+
+                        if (text == Timing.TODAY) todayShowing = true
+                        if (text == Timing.YESTERDAY) yesterdayShowing = true
+                        if (text == Timing.LAST_WEEK) lastWeekShowing = true
+
+                        Timing(currentDateInSeconds, text)
+                    } else {
+                        null
+                    }
+                }
+        }
+
+    private fun getTimingText(publishedDate: Long, currentDateInSeconds: Long): String {
+
+        val hoursDifference = TimeUnit.SECONDS.toHours(currentDateInSeconds - publishedDate)
+
+        if (hoursDifference <= 24) {
+            return Timing.TODAY
+        }
+
+        if (hoursDifference in 24..48) {
+            return Timing.YESTERDAY
+        }
+
+        return Timing.LAST_WEEK
+    }
 
     override suspend fun getAll() {
         try {

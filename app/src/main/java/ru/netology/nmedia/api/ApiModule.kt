@@ -19,7 +19,7 @@ import javax.inject.Singleton
 class ApiModule {
 
     companion object {
-        private const val BASE_URL = "${BuildConfig.BASE_URL}/api/"
+        private const val BASE_URL = "${BuildConfig.BASE_URL}/api/slow/"
     }
 
     @Singleton
@@ -35,7 +35,7 @@ class ApiModule {
     fun provideAuthInterceptor(
         appAuth: AppAuth,
     ): Interceptor = Interceptor { chain ->
-        val request = appAuth.authStateFlow.value?.token?.let {
+        val request = appAuth.authStateFlow.value.token?.let {
             chain.request()
                 .newBuilder()
                 .addHeader("Authorization", it)

@@ -55,4 +55,7 @@
     <string name="mass_mailing_text">Массовая рассылка</string>
     <string name="server_notification_text">Уведомление сервера</string>
     <string name="direct_mailing_for_you">Адресная рассылка для Вас</string>
+    <string name="today">Сегодня</string>
+    <string name="yesterday">Вчера</string>
+    <string name="last_week">На прошлой неделе</string>
 </resources>
